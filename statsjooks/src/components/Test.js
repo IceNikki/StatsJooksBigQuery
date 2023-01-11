@@ -26,7 +26,7 @@ const Send = async (e) => {
 		.catch((error) => {
 			console.error("Error adding document: ", error);
 		});
-	}
+    
    
 	return (
 		<div>

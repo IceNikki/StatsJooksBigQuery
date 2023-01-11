@@ -1,19 +1,20 @@
 
-
 import { db } from '../config/firebase';
 import React, { useState } from 'react';
+import { doc, updateDoc } from "firebase/firestore"; 
 
-	
-export default async function Send() {
-    const [name , Setname] = useState("");
+
+const Send = () => {
+	const [name , Setname] = useState("");
 	const [age , Setage] = useState("");
 	const [course , Setcourse] = useState("");
 	const sub = (e) => {
 		e.preventDefault();
-		
+    
 		// Add data to the store
         // on ajoute le candidat et ses résultats dans la table companies à celle qui lui est affilié
-		await updateDoc(doc(db, "Routes", routeName), {
+ async function SendFct() {
+		await updateDoc(doc(db, "Routes"), {
 			Name: name,
 			Age: age,
 			CourseEnrolled: course})
@@ -26,7 +27,7 @@ export default async function Send() {
 			console.error("Error adding document: ", error);
 		});
 	}
-
+    SendFct()
 	return (
 		<div>
 			<center>
@@ -48,3 +49,5 @@ export default async function Send() {
 	);
 
     }
+}
+export default Send;

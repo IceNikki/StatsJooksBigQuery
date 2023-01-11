@@ -1,21 +1,24 @@
 
+
 import { db } from '../config/firebase';
 import React, { useState } from 'react';
 
-
-const Send = () => {
-	const [name , Setname] = useState("");
+	
+export default async function Send() {
+    const [name , Setname] = useState("");
 	const [age , Setage] = useState("");
 	const [course , Setcourse] = useState("");
 	const sub = (e) => {
 		e.preventDefault();
 		
 		// Add data to the store
-		db.collection("Routes").add({
-			Nane: name,
+        // on ajoute le candidat et ses résultats dans la table companies à celle qui lui est affilié
+		await updateDoc(doc(db, "Routes", routeName), {
+			Name: name,
 			Age: age,
-			CourseEnrolled: course
-		})
+			CourseEnrolled: course})
+		
+
 		.then((docRef) => {
 			alert("Data Successfully Submitted");
 		})
@@ -43,6 +46,5 @@ const Send = () => {
 			</center>
 		</div>
 	);
-}
 
-export default Send;
+    }

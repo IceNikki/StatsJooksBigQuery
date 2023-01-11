@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { doc, updateDoc } from "firebase/firestore"; 
 
 
-const Send = () => {
+const Send = async (e) => {
 	const [name , Setname] = useState("");
 	const [age , Setage] = useState("");
 	const [course , Setcourse] = useState("");
@@ -13,7 +13,7 @@ const Send = () => {
     
 		// Add data to the store
         // on ajoute le candidat et ses résultats dans la table companies à celle qui lui est affilié
- async function SendFct() {
+
 		await updateDoc(doc(db, "Routes"), {
 			Name: name,
 			Age: age,
@@ -27,7 +27,7 @@ const Send = () => {
 			console.error("Error adding document: ", error);
 		});
 	}
-    SendFct()
+   
 	return (
 		<div>
 			<center>

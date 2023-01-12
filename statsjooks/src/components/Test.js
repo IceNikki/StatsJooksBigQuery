@@ -1,6 +1,6 @@
 import { db } from '../config/firebase';
 import React, { useState } from 'react';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
  
   
 export default function Send() {
@@ -12,7 +12,7 @@ export default function Send() {
       
        // Add data to the store
        // on ajoute le candidat et ses résultats dans la table companies à celle qui lui est affilié
-       await updateDoc(doc(db, "Routes", 'ui'), {
+       await setDoc(doc(db, "Routes", 'ui'), {
            Name: name,
            Age: age,
            CourseEnrolled: course})

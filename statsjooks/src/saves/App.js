@@ -1,12 +1,13 @@
 import "./App.css";
 import Papa from "papaparse";
 import React, { Component, useState } from 'react';
-import Table1 from "./components/Table";
+
 
 
 function Parse() {
   // State to store parsed data
   const [parsedData, setParsedData] = useState([]);
+ 
 
   //State to store table Column name
   const [tableRows, setTableRows] = useState([]);
@@ -37,21 +38,20 @@ function Parse() {
 
         // Filtered Values
         setValues(valuesArray);
+        console.log(parsedData[0])
+        
       },
     });
     class Table1 extends Component {
     
           render() {
-              var heading = [rowsArray];
-              var body =
-                  [['Kapil', 'Jaipur', 'MCA'],
-                  ['Aakash', 'Hisar', 'Btech'],
-                  ['Mani', 'Ranchi', 'MSc'],
-                  ['Yash', 'Udaipur', 'Mtech']
-                  ];
+              var heading = [tableRows];
+      
+
+      
               return (
                   <div >
-                      <Table heading={heading} body={body} />,
+                      <Table heading={heading}  />,
                   </div>
               );
           }
@@ -59,17 +59,15 @@ function Parse() {
     class Table extends Component {
           render() {
               var heading = this.props.heading;
-              var body = this.props.body;
+
               return (
-                  <table style={{ width: 500 }}>
+                  <table style={{ width: 600 }}>
                       <thead>
                           <tr>
                               {heading.map(head => <th>{head}</th>)}
                           </tr>
                       </thead>
-                      <tbody>
-                          {body.map(row => <TableRow row={row} />)}
-                      </tbody>
+
                   </table>
               );
           }
@@ -103,6 +101,7 @@ function Parse() {
       />
       <br />
       <br />
+      
       {/* Table */}
       <table>
         <thead>
@@ -125,7 +124,7 @@ function Parse() {
         </tbody>
       </table>
       
-                        <Table1/>,
+
                     
     </div>
   );

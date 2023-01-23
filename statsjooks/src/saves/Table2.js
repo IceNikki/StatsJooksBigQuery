@@ -46,32 +46,30 @@ async function Read(login) {
 };
 
 
-   
-const Test = () => { 
-  
+class Table2 extends Component{
+render() {
+    let Table1 =
     Read("Leuven").then((value) => {
-
         const objx = value
         const data = objx.objx
-        const body = Object.values(data);
-        var heading = ["City ", "Route Name ", "Number of sessions "];
-        
+        const val = Object.values(data);
+        const nC = String(data.nameCity)
+        console.log(val)
+       
+    });
+
+    var heading = ["City ", "Route Name ", "Number of sessions "];
+    
+    console.log(Table1)
     return (
-                      <div>
-                          <center>
-                   <h4>{heading}</h4>
-                   <h4>{body}</h4>
-                          </center>
-                      </div>
-                  );
-                 
-    
-      }
-      
-    )};   
+                <div>
+                    <center>
+             <h4>{heading}</h4>
+             <h4>well ? </h4>
+                    </center>
+                </div>
+            );
 
-    
-
-    
-
-export default Test;
+}
+}
+export default Table2;

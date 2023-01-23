@@ -47,15 +47,15 @@ async function Read(login) {
 
 
    
-const Test = () => { 
+const Test = async () => { 
   
-    Read("Leuven").then((value) => {
+  await Read("Leuven").then((value) => {
 
         const objx = value
         const data = objx.objx
         const body = Object.values(data);
         var heading = ["City ", "Route Name ", "Number of sessions "];
-        
+        console.log(body)
     return (
                       <div>
                           <center>

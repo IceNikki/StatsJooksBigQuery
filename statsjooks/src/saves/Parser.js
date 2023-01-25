@@ -1,12 +1,48 @@
-import "./App.css";
+
 import Papa from "papaparse";
 import React, { Component, useState } from 'react';
-import Table1 from "./components/Table";
+import { db } from '../config/firebase';
+import { doc, setDoc, updateDoc, addDoc } from 'firebase/firestore';
+ 
+async function Send(item) {
+  const obj = item;
 
+  const id = obj.ID
+  const namecity = obj['CITY NAME']
+  const nameroute = obj['ROUTE  NAME']
+  const nbrsessions= obj['NB ROUTE VIEWED']
+  
+  const ID = String(id)
+  const NAMECITY = String(namecity)
+  const NAMEROUTE = String(nameroute)
+  console.log(nbrsessions)
+     
+      // Add data to the store
+      await setDoc(doc(db, "Routes", ID), {
+
+          id: ID,
+          nameCity: NAMECITY,
+          nameRoute: NAMEROUTE,
+          nbrSessions: nbrsessions })
+      const cityRef = doc(db, "City", NAMECITY);
+      addDoc(cityRef, { Routes: ID }, { merge: true })
+     
+         
+        
+      .then((docRef) => {
+          alert("Data Successfully Submitted");
+      })
+      .catch((error) => {
+          console.error("Error adding document: ", error);
+      });
+    }
+
+  
 
 function Parse() {
   // State to store parsed data
   const [parsedData, setParsedData] = useState([]);
+ 
 
   //State to store table Column name
   const [tableRows, setTableRows] = useState([]);
@@ -37,12 +73,17 @@ function Parse() {
 
         // Filtered Values
         setValues(valuesArray);
+        console.log(parsedData[0])
+
+        const myList = parsedData.map((item) => Send(item))      
+
       },
     });
     class Table1 extends Component {
     
           render() {
               var heading = [tableRows];
+      
 
       
               return (
@@ -97,6 +138,7 @@ function Parse() {
       />
       <br />
       <br />
+      
       {/* Table */}
       <table>
         <thead>
@@ -119,7 +161,7 @@ function Parse() {
         </tbody>
       </table>
       
-                        <Table1/>,
+
                     
     </div>
   );

@@ -1,12 +1,13 @@
 import "./App.css";
 import Papa from "papaparse";
 import React, { Component, useState } from 'react';
-import Table1 from "./components/Table";
+
 
 
 function Parse() {
   // State to store parsed data
   const [parsedData, setParsedData] = useState([]);
+ 
 
   //State to store table Column name
   const [tableRows, setTableRows] = useState([]);
@@ -37,12 +38,15 @@ function Parse() {
 
         // Filtered Values
         setValues(valuesArray);
+        console.log(parsedData[0])
+        
       },
     });
     class Table1 extends Component {
     
           render() {
               var heading = [tableRows];
+      
 
       
               return (
@@ -97,6 +101,7 @@ function Parse() {
       />
       <br />
       <br />
+      
       {/* Table */}
       <table>
         <thead>
@@ -119,7 +124,7 @@ function Parse() {
         </tbody>
       </table>
       
-                        <Table1/>,
+
                     
     </div>
   );

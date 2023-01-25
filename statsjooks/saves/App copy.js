@@ -1,7 +1,7 @@
 import "./App.css";
 import Papa from "papaparse";
 import React, { Component, useState } from 'react';
-import Table1 from "./components/Table";
+import Table1 from "../src/components/Table";
 
 
 function Parse() {

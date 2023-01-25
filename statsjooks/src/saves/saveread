@@ -1,0 +1,38 @@
+const Table1 = async () => {
+        
+        const docRef = doc(db, "City", "Leuven");
+        const docSnap = await getDoc(docRef);
+        
+        
+        const idArray = []
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const [cleanarray] = Object.values(data)
+          
+          for (const value of cleanarray) {
+            const id = String(value)
+            const count = idArray.push(id)
+          }
+            
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+    
+        const test = idArray[1];
+        const docRef2 = doc(db, "Routes", test);
+        const docSnap2 = await getDoc(docRef2);
+        const data2 = docSnap2.data();
+        const datajson = JSON.stringify(data2, null, 2);
+        
+        
+        
+    
+    return (
+    <div className="App">
+    {datajson.nbrSession} {datajson.nameCity}
+  </div>
+  
+    )
+  
+  };

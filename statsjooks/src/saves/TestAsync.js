@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom/client';
 
 
 async function Read(login) {
+
   const docRef = doc(db, "City", login);
   const docSnap = await getDoc(docRef);
   
@@ -13,10 +14,7 @@ async function Read(login) {
   const dataArray = []
   if (docSnap.exists()) {
     const data = docSnap.data();
-    
     const [cleanarray] = Object.values(data)
-    
-
     for (const value of cleanarray) {
       const id = String(value)
       const count = idArray.push(id)
@@ -31,7 +29,7 @@ for (const element of idArray){
   const docRef2 = doc(db, "Routes", test);
   const docSnap2 = await getDoc(docRef2);
   const data2 = docSnap2.data();
-
+  
   const datajson = JSON.stringify(data2, null, 2)
   const objx = JSON.parse(datajson);
 
@@ -42,12 +40,10 @@ return(dataArray)
 };
 
 
-const Reader = props => {
-
+const Reader = () => {
+const Maps = []
   const [dataread, setData] = React.useState("");
-  var heading = ["City ", "Route Name ", "Number of sessions "];
-
-
+  
   React.useEffect(() => {
 
     const fetchUserData = async () => {
@@ -55,42 +51,54 @@ const Reader = props => {
       const response = await Read("Leuven").then((value) => {
         const objx = value
         const arrayArray = []
-
+        Maps.push(value)
         for (const element of objx){
         const body = Object.values(element);
-        console.log(body)
+        
         arrayArray.push(body)
         }
+       
       return(arrayArray)})
         const datajson1 = JSON.stringify(response, null, 2)
         const dataread = JSON.parse(datajson1);
       
-      console.log(dataread)
+      
 
       setData(dataread);
 
     };
-
     fetchUserData();
-
+    
+    console.log(Maps)
+    setData(Maps)
+    
   }, []);
 
 
-  return (
+  
 
-    <div>
-
-      <h1>Année 2022</h1>
+  return (<table>
+    <thead>
+      <tr>
+        <th>ID </th>
+        <th>City name </th>
+        <th>Route name </th>
+        <th>Number of sessions </th>
+        {/* <th>Number of trees planted</th> */}
+      </tr>
+    </thead>
+    <tbody>
+    {dataread.map(item => (
       
-                  <center>
-           <h4>{heading}</h4>
-           <h4>{dataread}</h4>
-                  </center>
-              </div>
-
-    
-
-  );
+        <tr>
+          <td>{ item[0] }</td>
+          <td>{ item[1] }</td>
+          <td>{ item[2]}</td>
+          <td>{ item[3] }</td>
+        </tr>
+    ))}
+    </tbody>
+  </table>);
 
 
 };

@@ -9,7 +9,7 @@ import '../css/App.css';
 // nos composants
 import Contactform from '../components/Contact-form';
 import Stat from '../components/Stats';
-import Send from '../components/Send';
+
 
 // Images
 // import imgF1 from '../imgs/fitness1.jpg';

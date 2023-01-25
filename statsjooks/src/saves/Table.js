@@ -1,19 +1,15 @@
 // Import Firestore database
 import { db } from '../config/firebase';
-import { collection, query, getDocs, getDoc, doc, setDoc, where, Timestamp } from "firebase/firestore";
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom/client';
+import {  getDoc, doc } from "firebase/firestore";
+import React from 'react';
 
 async function Read(login) {
     const docRef = doc(db, "City", login);
     const docSnap = await getDoc(docRef);
-    
-    
     const idArray = []
-    const testArray = []
+  
     if (docSnap.exists()) {
       const data = docSnap.data();
-      
       const [cleanarray] = Object.values(data)
       
 
@@ -22,7 +18,6 @@ async function Read(login) {
         const count = idArray.push(id)
       }
 
-      
         
     } else {
       // doc.data() will be undefined in this case
@@ -35,16 +30,11 @@ async function Read(login) {
     const data2 = docSnap2.data();
     const datajson = JSON.stringify(data2, null, 2)
     const obj2 = JSON.parse(datajson);
+
    
-    var nC = obj2.nameCity;
-    var nR = obj2.nameRoute;
-    var nbS = obj2.nbrSessions;
-    var objx = obj2
-   
-    return {objx};
+    return {obj2};
     
 };
-
 
    
 const Test = async () => { 

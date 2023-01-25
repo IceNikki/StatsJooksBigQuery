@@ -4,23 +4,11 @@
 
 
 
-import Cookies from 'js-cookie'
-import Modal from 'react-modal';
 
 import 'react-toastify/dist/ReactToastify.css';
-import { exportAsPicture, roundToTwo } from './Utils';
-import { ToastContainer, toast } from 'react-toastify';
-
-import Table1 from '../components/Table';
-import Read from '../components/Read';
-import Reader from '../components/TestAsync';
 import { db } from '../config/firebase';
 import { collection, query, getDocs, getDoc, doc, setDoc, where, Timestamp } from "firebase/firestore";
 import React, {useState, Component } from 'react';
-import ReactDOM from 'react-dom/client';
-import { useTable } from 'react-table'
-
-
 export default function Table() {
 
 

@@ -3,11 +3,9 @@
 /* ---------------------------------------------- */
 
 import Cookies from 'js-cookie'
-import { db } from '../config/firebase';
-import React, { useState } from 'react';
+import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
-import { collection, query, getDocs, getDoc, doc, setDoc } from "firebase/firestore";
+import { ToastContainer } from 'react-toastify';
 import Parse from '../components/Parser'
 
 export default function Interfaceadmin() {
@@ -21,7 +19,7 @@ export default function Interfaceadmin() {
 
 <React.StrictMode>
   
-  
+  {/*Appel du composant qui parse le CSV et sauvegarde en base*/}
   <Parse/>
   
 </React.StrictMode>

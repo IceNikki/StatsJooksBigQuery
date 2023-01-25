@@ -1,5 +1,5 @@
 import { db } from '../config/firebase';
-import { collection, query,addDoc, getDocs, getDoc, doc, setDoc, where } from "firebase/firestore";
+import {  doc, setDoc } from "firebase/firestore";
 import { useState } from 'react';
 
 const Send = async () => {

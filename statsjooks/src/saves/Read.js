@@ -1,71 +1,82 @@
 // Import Firestore database
 import { db } from '../config/firebase';
 import { collection, query, getDocs, getDoc, doc, setDoc, where } from "firebase/firestore";
-import { useState } from 'react';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom/client';
 
  
-const Read = () => {
-  
-    const [info , setInfo] = useState([]);
- 
-    // Start the fetch operation as soon as
-    // the page loads
-    window.addEventListener('load', () => {
-        Fetchdata();
-      });
- 
-    // Fetch the required data using the get() method
-    const Fetchdata = ()=>{
-        db.collection("Routes").get().then((querySnapshot) => {
-            
-            // Loop through the data and store
-            // it in array to display
-            querySnapshot.forEach(element => {
-                var data = element.data();
-                setInfo(arr => [...arr , data]);
-console.log(data)
-                 
-            });
-        })
-    }
-     
-    // Display the result on the page
-    return (
-        <div>
-            <center>
-            <h2>Routes</h2>
-            </center>
-         
-        {
-            info.map((data) => (
-            <Frame city={data.City}
-                   nbrRuns={data.nbrSessions}
-                   routeName={data.nameRoute}/>
-            ))
-        }
-        </div>
- 
-    );
+async function Read() {
+    const docRef = doc(db, "City", "Leuven");
+    const docSnap = await getDoc(docRef);
+    
+    
+    const idArray = []
+    const testArray = []
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      
+      const [cleanarray] = Object.values(data)
+      
+
+      for (const value of cleanarray) {
+        const id = String(value)
+        const count = idArray.push(id)
+      }
+
+      
+        
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+
+    const test = idArray[1];
+    const docRef2 = doc(db, "Routes", test);
+    const docSnap2 = await getDoc(docRef2);
+    const data2 = docSnap2.data();
+    const datajson = JSON.stringify(data2, null, 2)
+    const obj2 = JSON.parse(datajson);
+    console.log(obj2)
+    return(obj2);
 }
- 
-// Define how each display entry will be structured
-const Frame = ({city , nbrRuns , routeName}) => {
-    console.log(city + " " + nbrRuns + " " + routeName);
-    return (
-        <center>
-            <div className="div">
-                 
-<p>Number of runs : {nbrRuns}</p>
-  
-                 
-<p>Route Name : {routeName}</p>
- 
-                 
-<p>City : {city}</p>
-  
-            </div>
-        </center>
-    );
-}
- 
-export default Read;
+    const Stocks = (obj2) => {
+
+        return (
+      
+          <>
+      
+            <div className="stock-container">
+      
+              {obj2.map((data, key) => {
+      
+                return (
+      
+                  <div key={key}>
+      
+                    {data.nameCity +
+      
+                      " , " +
+      
+                      data.nameRoute +
+      
+                      ", " +
+      
+                      data.nbrSessions}
+      
+                  </div>
+      
+                );
+      
+              })}
+      
+            </div>
+      
+          </>
+      
+        );
+      
+      };
+
+
+
+export default Stocks;

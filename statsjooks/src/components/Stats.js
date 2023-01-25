@@ -1,23 +1,19 @@
-/* ---------------------------------------------- */
-/* -- Composant de création des stats-*/
-/* ---------------------------------------------- */
-
-
-
+/* ---------------------------------------------------------------------- */
+/* -- Composant de lecture et d'affichage des stats pour le client -*/
+/* ---------------------------------------------- ------------------------*/
 
 import 'react-toastify/dist/ReactToastify.css';
 import { db } from '../config/firebase';
-import { collection, query, getDocs, getDoc, doc, setDoc, where, Timestamp } from "firebase/firestore";
-import React, {useState, Component } from 'react';
+import { getDoc, doc } from "firebase/firestore";
+import React, {useState} from 'react';
+
 export default function Table() {
 
 
 	/* Déclaration d'Hooks permettant de mettre à 
 	jour dynamiquement les composants [variable, fonction de maj] */
 
-	// nom du parcours
-    const [routeName, setrouteName] = useState(0);
-	// booléen d'affichage du graphe des résultats
+	// booléen d'affichage du graphe 
     const [showChart, setChart] = useState(false);
 	// booléen d'affichage du tableau
 	const [showTest, setTable] = useState(false);
@@ -29,7 +25,7 @@ export default function Table() {
 	const [cityName, setCityName] = useState("");
 
 
-	// Vérification puis lancement du test
+	/*Cette fonction lance la session de statistiques, vérifie que la ville existe dans la BDD et le mot de passe (a modifier)*/ 
 	async function startTest (e) {
 
 		// Empêche le rafraîchissement de page
@@ -39,8 +35,6 @@ export default function Table() {
 		const formData = new FormData(e.target);
 		const formProps = Object.fromEntries(formData);
 		let { city_name, city_password } = formProps
-
-		
 
 			 
 		// Check de l'existence de la ville dans notre bdd
@@ -59,25 +53,24 @@ export default function Table() {
 			setTable(true)
 			showError(false)
 			setChart(true)
-			
-
 		}
-		
 		// si la ville n'existe pas on affiche une erreur
 		else showError(true)
 
 	}
 
 
-	
+	/*Cette fonction lit la database à partir du nom de la ville login et return le tableau*/ 
 
 async function Read(login) {
 
+	/*Permet de récupérer les données */ 
 	const docRef = doc(db, "City", login);
 	const docSnap = await getDoc(docRef);
-	
+	/* Définit les array dans lequelles les données vont être stockées*/ 
 	const idArray = []
 	const dataArray = []
+	/*Si les données existent, permet de lister les id des parcours disponibles dans la ville donnée*/ 
 	if (docSnap.exists()) {
 	  const data = docSnap.data();
 	  const [cleanarray] = Object.values(data)
@@ -90,6 +83,7 @@ async function Read(login) {
 	  // doc.data() will be undefined in this case
 	  console.log("No such document!");
 	}
+	/*pour chaque parcours existant dans la ville et donc listé dans idArray, on récupère les données et on les return dans un format exploitable*/ 
   for (const element of idArray){
 	const test = element;
 	const docRef2 = doc(db, "Routes", test);
@@ -106,39 +100,36 @@ async function Read(login) {
   };
   
   
+  /*Reader est un composant qui permet d'afficher le tableau lui-même à partir des données récupérées dans Read*/ 
   const Reader = ({cname}) => {
-  
+  /*On déclare un array et un booléen pour stocker les data extraites par Read et gérer l'asynchronisation*/ 
   const [dataread, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 	
 	React.useEffect(() => {
   
 	  const fetchUserData = async () => {
+		/*On set Loading à true en attendant la réponse de la fonction async*/ 
 		setLoading(true);
 		const response = await Read(cityName).then((value) => {
 		const objx = value
+		/*on stocke la data dans dataread et on passe Loading à false pour indiquer que les données sont bien définies*/ 
 		setData(value)
 		setLoading(false)
-		  /* const arrayArray = []
-		  for (const element of objx){
-		  const body = Object.values(element);
-		  arrayArray.push(body)
-		  }
-		return(arrayArray) */
 	})
-		  /* const datajson1 = JSON.stringify(response, null, 2)
-		  const dataread = JSON.parse(datajson1); */
-		  
-	  };
 	
+	  };
+	  /*On appelle la fonction précédemment créée*/ 
 	  fetchUserData();
 	  
 	  
 	}, []);
-  
-	if (loading) return <p>Loading...</p> 
-	else {
+  /*Si Loading est true, on doit attendre le retour des données qui sont en train de charger avec await Read()*/ 
 
+	if (loading) return <p>Loading...</p> 
+
+	else {
+	/*Sinon on crée le tableau */ 
 	return ( <table>
 		<thead>
 		  <tr>
@@ -150,6 +141,7 @@ async function Read(login) {
 		  </tr>
 		</thead>
 		<tbody>
+		{/*Pour chaque item de dataread on lit les values et on les affiche sur une ligne */ }
 		{dataread.map(item => (
 		  
 			<tr>
@@ -171,14 +163,14 @@ async function Read(login) {
 	// rendu html
 	return (
 		<div className='fullHeight'>
-			{/* (1ère cond, if) condition de démarrage du test, showTest doit être == true */}
+			{/* (1ère cond, if) condition de démarrage de la session, showTest doit être == true */}
 			{ showTest ? (
 				<div className=''>
 
 				
 							<h4 className='mt-4'>Vos statistiques </h4>
 							
-							{/* Création de notre graphique avec notre tableau de réponses comme 
+							{/* Création de notre tableau de réponses comme 
 							données (utiliser un dimensionnement en % pour du responsive) */}
 							
 							<React.StrictMode>
@@ -191,7 +183,7 @@ async function Read(login) {
 						</div>
 					
 
-			// (1ère cond, else)  si le test n'a pas commencé on reste sur l'affichage de démarrage du quizz
+			// (1ère cond, else)  si la sessionn'a pas commencé on reste sur l'affichage de démarrage 
 			) : (
 				<>
 				{/* <img src={} width="35%" height='45%' className='mt-1 mb-5' alt=""/><br/> */}

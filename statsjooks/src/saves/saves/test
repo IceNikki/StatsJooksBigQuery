@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { db } from '../config/firebase';
 import { getDoc, doc } from "firebase/firestore";
 import React, {useState} from 'react';
-import { citysuggester } from '../components/CitySuggester';
+
 export default function Table() {
 
 
@@ -19,8 +19,6 @@ export default function Table() {
 	const [showTest, setTable] = useState(false);
 	// message d'erreur
 	const [errorForm, showError] = useState(false);
-	// message d'erreur
-	const [errorForm2, showError2] = useState(false);
 	// mot de passe, global
 	const [cityPassword, setCityPassword] = useState("");
 	// nom de la ville, global
@@ -44,9 +42,9 @@ export default function Table() {
 		const docSnap = await getDoc(docRef);
 		const docRef2 = doc(db, "Password", city_password);
 		const docSnap2 = await getDoc(docRef2);
-		console.log(docSnap2)
+		
 		// si la ville existe on procède
-		if (docSnap.exists() && docSnap2.exists() ) {
+		if (docSnap.exists()) {
 			// globalise les données du formulaire pour plus tard
 			setCityName(city_name)
 			setCityPassword(city_password)
@@ -56,75 +54,50 @@ export default function Table() {
 			showError(false)
 			setChart(true)
 		}
-		else if (docSnap.exists() && !docSnap2.exists() ) {
-			// code for incorrect password
-			// Sinon, on affiche une erreur
-			showError2(true);
-		  }
-		  else if (!docSnap.exists() && !docSnap2.exists() ) {
-			// code for incorrect password
-			// Sinon, on affiche une erreur
-			showError2(true);
-		  }
-		else if (!docSnap.exists() && docSnap2.exists() ){
-		// Si la ville n'existe pas, on appelle citysuggester pour proposer une ville similaire
-		const suggestedCity = await citysuggester(city_name);
-
-// Si une ville similaire est trouvée, on propose à l'utilisateur de continuer avec cette ville
-if (suggestedCity !== null) {
-  if (window.confirm(`Avez-vous voulu dire ${suggestedCity} ?`)) {
-    city_name = suggestedCity;
-
-    setCityName(city_name);
-    setCityPassword(city_password);
-
-    setTable(true);
-    showError(false);
-    setChart(true);
-  }
-  else {
-	// Sinon, on affiche une erreur
-	showError(true);
-  }
-}
-}
+		// si la ville n'existe pas on affiche une erreur
+		else showError(true)
 
 	}
 
 
 	/*Cette fonction lit la database à partir du nom de la ville login et return le tableau*/ 
 
-	async function Read(login) {
-		console.log(login)
-		const docRef = doc(db, "City", login);
-		const docSnap = await getDoc(docRef);
-		
-		if (docSnap.exists()) {
-		  const data = docSnap.data();
-		  const { Routes } = data;
-		  const dataArray = [];
-		
-		  for (const routeId of Routes) {
-			const routeDocRef = doc(db, "Routes", routeId);
-			const routeDocSnap = await getDoc(routeDocRef);
-		
-			if (routeDocSnap.exists()) {
-			  const routeData = routeDocSnap.data();
-			  dataArray.push({
-				id: routeData.id,
-				nameCity: routeData.nameCity,
-				nameRoute: routeData.nameRoute,
-				nbrSessions: routeData.nbrSessions
-			  });
-			}
-		  }
-		
-		  return dataArray;
-		} else {
-		  console.log("No such document!");
-		  return [];
-		}
+async function Read(login) {
+
+	/*Permet de récupérer les données */ 
+	const docRef = doc(db, "City", login);
+	const docSnap = await getDoc(docRef);
+	/* Définit les array dans lequelles les données vont être stockées*/ 
+	const idArray = []
+	const dataArray = []
+	/*Si les données existent, permet de lister les id des parcours disponibles dans la ville donnée*/ 
+	if (docSnap.exists()) {
+	  const data = docSnap.data();
+	  const [cleanarray] = Object.values(data)
+	  for (const value of cleanarray) {
+		const id = String(value)
+		const count = idArray.push(id)
 	  }
+  
+	} else {
+	  // doc.data() will be undefined in this case
+	  console.log("No such document!");
+	}
+	/*pour chaque parcours existant dans la ville et donc listé dans idArray, on récupère les données et on les return dans un format exploitable*/ 
+  for (const element of idArray){
+	const test = element;
+	const docRef2 = doc(db, "Routes", test);
+	const docSnap2 = await getDoc(docRef2);
+	const data2 = docSnap2.data();
+	
+	const datajson = JSON.stringify(data2, null, 2)
+	const objx = JSON.parse(datajson);
+  
+	dataArray.push(objx)
+  }
+  
+  return(dataArray)
+  };
   
   
   /*Reader est un composant qui permet d'afficher le tableau lui-même à partir des données récupérées dans Read*/ 
@@ -222,8 +195,6 @@ if (suggestedCity !== null) {
 
 					{/* message d'erreur si la ville n'est pas enregistrée */}
 					<p className={(errorForm) ? "msgError" : 'hide-error'}> Nous sommes désolés mais les statistiques de votre ville ne semblent pas accessibles. N'hésitez pas à nous contacter par mail et nous résoudrons ce problème au plus vite.</p>
-					{/* message d'erreur si le mot de passe est mauvails*/}
-					<p className={(errorForm2) ? "msgError" : 'hide-error'}> Votre mot de passe semble erroné. Veuillez l'entrer à nouveau ou nous contacter. </p>
 					
 					
 					{/* bouton d'envoi du formulaire */}

@@ -38,7 +38,7 @@ export default function Admin() {
     const formProps = Object.fromEntries(formData);
     let { formName, formPassword } = formProps
 
-    // Construction de la requête de récupération du mot de pase associé au nom entré
+    // Construction de la requête de récupération du mot de passe associé au nom entré
     const queryFB = query(collection(db, "administrateurs"), where("nom", "==", formName));
 
     // éxecution de la requête

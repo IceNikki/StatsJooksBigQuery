@@ -30,7 +30,7 @@ async function Send(item) {
           nameRoute: NAMEROUTE,
           nbrSessions: nbrsessions })
       const cityRef = doc(db, "City", NAMECITY);
-      const docSnap = await setDoc(cityRef, {Routes : arrayUnion(ID)}, {merge:true}) 
+      const docSnap = await setDoc(cityRef, {Routes : arrayUnion(ID), nameCity : NAMECITY}, {merge:true}) 
         /*Fonction async donc penser à faire un then pour annoncer les résultats. Renvoie "Data successfully submitted" une fois par ligne écrite*/ 
       .then((docRef) => {
           alert("Data Successfully Submitted");

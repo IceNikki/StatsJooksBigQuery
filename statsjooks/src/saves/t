@@ -46,7 +46,7 @@ export default function Table() {
 		const docSnap2 = await getDoc(docRef2);
 		console.log(docSnap2)
 		// si la ville existe on procède
-		if (docSnap.exists() && docSnap2.exists() ) {
+		if (docSnap.exists() && docSnap2.exists() && docSnap2.data().password === city_password) {
 			// globalise les données du formulaire pour plus tard
 			setCityName(city_name)
 			setCityPassword(city_password)
@@ -56,17 +56,17 @@ export default function Table() {
 			showError(false)
 			setChart(true)
 		}
-		else if (docSnap.exists() && !docSnap2.exists() ) {
+		else if (docSnap.exists() && docSnap2.exists() && docSnap2.data().password !== city_password) {
 			// code for incorrect password
 			// Sinon, on affiche une erreur
 			showError2(true);
 		  }
-		  else if (!docSnap.exists() && !docSnap2.exists() ) {
+		  else if (!docSnap.exists() && docSnap2.exists() && docSnap2.data().password !== city_password) {
 			// code for incorrect password
 			// Sinon, on affiche une erreur
 			showError2(true);
 		  }
-		else if (!docSnap.exists() && docSnap2.exists() ){
+		else if (!docSnap.exists() && docSnap2.exists() && docSnap2.data().password == city_password){
 		// Si la ville n'existe pas, on appelle citysuggester pour proposer une ville similaire
 		const suggestedCity = await citysuggester(city_name);
 

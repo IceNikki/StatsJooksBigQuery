@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "statsjooks"
-  }
+    "default": "statsjooks-e80dd",
+    "statsjooks": "statsjooks-e80dd"
+  },
+  "targets": {},
+  "etags": {}
 }

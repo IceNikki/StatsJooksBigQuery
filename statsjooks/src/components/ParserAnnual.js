@@ -16,19 +16,19 @@ async function Send(item) {
   const id = obj.ID
   const namecity = obj['CITY NAME']
   const nameroute = obj['ROUTE  NAME']
-  let nbrsessions= obj['NB ROUTE VIEWED']
+  let nbrsessionsannual= obj['NB ROUTE VIEWED']
   /*on assigne un type aux constantes*/ 
   const ID = String(id)
   const NAMECITY = String(namecity)
   const NAMEROUTE = String(nameroute)
-  const NBRSESSIONS = Number(nbrsessions)
+  const NBRSESSIONSANNUAL = Number(nbrsessionsannual)
       // On ajoute les data a Firestore
       await updateDoc(doc(db, "Routes", ID), {
 
           id: ID,
           nameCity: NAMECITY,
           nameRoute: NAMEROUTE,
-          nbrSessions: NBRSESSIONS })
+          nbrSessionsAnnual: NBRSESSIONSANNUAL })
       const cityRef = doc(db, "City", NAMECITY);
       const docSnap = await updateDoc(cityRef, {Routes : arrayUnion(ID), nameCity : NAMECITY}, {merge:true}) 
         /*Fonction async donc penser à faire un then pour annoncer les résultats. Renvoie "Data successfully submitted" une fois par ligne écrite*/ 

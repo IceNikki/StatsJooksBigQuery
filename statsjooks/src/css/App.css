@@ -2,18 +2,93 @@
 /* --------- Titres/textes ---------------------- */
 /* ---------------------------------------------- */
 
-.title {
-  font-size: 50px;
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('GothamRounded-Bold.otf') format('opentype'),
+       url('GothamRounded-Bold.woff') format('woff'),
+       url('GothamRounded-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('GothamRounded-Medium.otf') format('opentype'),
+       url('GothamRounded-Medium.woff') format('woff'),
+       url('GothamRounded-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('GothamRounded-Bold.otf') format('opentype'),
+       url('GothamRounded-Bold.woff') format('woff'),
+       url('GothamRounded-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+thead th {
   font-weight: bold;
 }
 
-.subtitleNavbar {font-size: 18px; color: #57C528; text-decoration: none;}
+tbody td {
+  font-weight: normal;
+}
 
-.titleNavbar {font-size: 25px; text-decoration: none; color: #57C528;}
+.menu {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.menu button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin: 0 1rem;
+  padding: 0.5rem;
+}
+
+.menu button.active {
+  border-bottom: 2px solid black;
+}
+
+
+.table_header {
+  font-size: 20px;
+  font-family: 'Gotham Rounded';
+  font-weight: "bold"
+}
+
+.table_body {
+  font-size: 20px;
+  font-family: 'Gotham Rounded';
+  font-weight: 'normal'
+}
+.gotham-rounded-bold {
+  font-family: 'Gotham Rounded', sans-serif;
+  font-weight: bold;
+}
+
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  font-family: 'Gotham Rounded', sans-serif;
+}
+
+.subtitleNavbar {font-size: 18px; font-family: 'Gotham Rounded', sans-serif; color: rgb(255, 255, 255); text-decoration: none;}
+
+.titleNavbar {font-size: 25px; font-family: 'Gotham Rounded', sans-serif; text-decoration: none; color: #57C528;}
 
 .titleForm {
   font-size: 32px;
   font-weight: bold;
+  font-family: 'Gotham Rounded', sans-serif;
 }
 
 .quizz-question {
@@ -30,18 +105,19 @@
 
 .Modal { 
   position: absolute;
-  background-color: rgba(155, 152, 146, 0.94);
+  background-color: #57c528;
   overflow: scroll;
 }
 
 .box-quizz {
-  border: solid 6px rgba(247, 195, 235, 0.300);
-  height: 630px;
+  border: solid 6px rgb(255, 255, 255);
   text-align: center;
-  width: 60%;
+  width: 100%;
   transition: "all .2s";
-  overflow-x: scroll;
+  /* overflow-x: scroll; */
+  display: inline-block;
 }
+
 
 /* ---------------------------------------------- */
 /* --------- Eléments --------------------------- */
@@ -49,6 +125,7 @@
 .txt-intro {
   width: 100%;
   font-size: 18px;
+  font-family: 'Gotham Rounded', sans-serif;
 }
 
 img {
@@ -72,7 +149,18 @@ tr:nth-child(4n + 3) td {
   border: none;
   background-color: rgba(108, 201, 207, 0.1)
 }
+.custom-button {
+  background-color: white;
+  color: #43b6d3;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
+.custom-button.active {
+  background-color: #57C528;
+}
 .input-quizz {
   color: black;
   border: none;
@@ -90,14 +178,14 @@ tr:nth-child(4n + 3) td {
 }
 
 .btnAnswer {
-  border: solid 1px red;
+  border: solid 1px #57C528;
   background-color: white;
   margin-top: 15px;
   padding: 15px 0 15px;
 }
 
 .btnAnswer:hover {
-  background-color: #5cb8c9;
+  background-color: white;
 }
 
 /* ---------------------------------------------- */
@@ -109,7 +197,7 @@ tr:nth-child(4n + 3) td {
 .orange { background-color:#F05537; border: 1px none #dddddd;}
 
 .btnAnswer{
-  border-color: #f1a90f;
+  border-color: white;
   background-image: -webkit-linear-gradient(45deg, #f1c40f 50%, transparent 50%);
   background-image: linear-gradient(45deg, #f1c40f 50%, transparent 50%);
   background-position: 100%;
@@ -127,8 +215,8 @@ tr:nth-child(4n + 3) td {
 
 .mt15 { margin-top: 15%;}
 
-.ftsize25 { font-size: 25px;}
-.ftsize55 { font-size: 55px; font-weight: bold;}
+.ftsize25 { font-size: 25px; font-family: 'Gotham Rounded', sans-serif; }
+.ftsize55 { font-size: 55px; font-weight: bold; font-family: 'Gotham Rounded', sans-serif; }
 
 .hide-error { visibility: hidden;}
 
@@ -148,11 +236,53 @@ tr:nth-child(4n + 3) td {
 
 .msgError { color: red;}
 
-.subtitleNavbar:hover, .titleNavbar:hover { color: rgb(129, 29, 29)}
+.subtitleNavbar:hover, .titleNavbar:hover { color: #0C243C}
 
 .blueFont {color: #5cb8c9;}
 
 .float-right {float: right}
+
+.logo {
+  width: 30%;
+  height: auto;
+  max-width: 1000px;
+}
+table.statistics-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table.statistics-table td,
+table.statistics-table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+table.statistics-table th {
+  background-color: #f2f2f2;
+}
+
+table.statistics-table tr:last-child {
+  border-top: 2px solid #ccc;
+}
+
+table.statistics-table tr:last-child td:first-child {
+  font-weight: bold;
+  padding-top: 10px;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+  max-height: 70vh; /* set a maximum height to avoid the image overflowing the screen on smaller devices */
+}
+
 
 /* ---------------------------------------------------------------------------- */
 /*  Media-queries custom, leur classe css parente doit être déclarée au dessus  */
@@ -174,7 +304,7 @@ tr:nth-child(4n + 3) td {
 }
 
 @media screen and (min-width: 751px) and (max-width: 1050px) {
-  .box-quizz {width: 90%; }
+  .box-quizz {width: 100%; }
 
   .chartQuizz {height: 1000px;}
 

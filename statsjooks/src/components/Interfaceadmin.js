@@ -7,6 +7,7 @@ import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import Parse from '../components/Parser'
+import ParseAnnual from '../components/ParserAnnual'
 
 export default function Interfaceadmin() {
 
@@ -15,12 +16,18 @@ export default function Interfaceadmin() {
     <div className="interAdmin">
       {/* Composant de popup discret */}
       <ToastContainer />
-      <h3 className='text-center mt-3 mb-5'>Bonjour {Cookies.get("acsssn")}</h3>
+      <h4 className='text-center mt-3 mb-5 gotham-rounded-bold' >Bonjour,  {Cookies.get("acsssn")} !</h4>
 
 <React.StrictMode>
   
-  {/*Appel du composant qui parse le CSV et sauvegarde en base*/}
+  {/*Appel des composants qui parsent les CSV et sauvegardent en base*/}
+  <h3 className='text-center mt-3 mb-5'>Importer les statistiques trimestrielles </h3>
   <Parse/>
+
+  <h3 className='text-center mt-30 mb-5'>Importer les statistiques annuelles </h3>
+  <ParseAnnual/>
+
+  <h3 className='text-center mt-30 mb-5'>Attention : cette action supprimera les données précédemment enregistrées. Ne mélangez pas les données annuelles et trimestrielles !!</h3>
   
 </React.StrictMode>
 

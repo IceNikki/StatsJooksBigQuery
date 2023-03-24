@@ -12,10 +12,10 @@ export default function Navigationbar() {
   return (
     <div>
       {/* Barre de navigation, située en haut de page */}
-      <Navbar collapseOnSelect expand="sm" bg="light" variant="light">
+      <Navbar collapseOnSelect expand="sm" style={{ backgroundColor: "#57C528" }} variant="dark">
         <Container className="blueFont">
           <Navbar.Brand onClick={reloadHome}>
-            <img src={logo} alt="Logo" />
+           <img src={logo} alt="Logo" className="logo" />
             <Link to="/" className="titleNavbar">
               <p className="subtitleNavbar">
                 The statistics of your routes in a few clicks !

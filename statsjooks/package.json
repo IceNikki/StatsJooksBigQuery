@@ -1,6 +1,6 @@
 {
   "name": "statsjooks",
-  "homepage": "http://176.153.69.178:10/",
+  "homepage": "https://statsjooks-e80dd.web.app/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -19,6 +19,7 @@
     "emailjs": "^4.0.1",
     "firebase": "^9.15.0",
     "fuse.js": "^6.6.2",
+    "ghpages": "^0.0.10",
     "git": "^0.1.5",
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.1",
@@ -31,7 +32,8 @@
     "react-dom": "^18.2.0",
     "react-modal": "^3.15.1",
     "react-notifications": "^1.7.4",
-    "react-router-dom": "^6.3.0",
+    "react-router": "^6.9.0",
+    "react-router-dom": "^6.9.0",
     "react-scripts": "^5.0.1",
     "react-table": "^7.8.0",
     "react-toastify": "^9.0.8",
@@ -45,7 +47,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -b main -d build"
   },
   "eslintConfig": {
     "extends": [

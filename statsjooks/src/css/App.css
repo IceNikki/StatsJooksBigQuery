@@ -394,5 +394,21 @@ table.statistics-table tr:last-child td:first-child {
   }
 
   .img-quizz {width: 60%;}
+  
+  .progressBar {
+    width: 100%;
+    background-color: #ddd;
 }
+
+.progress {
+    height: 20px;
+    background-color: #57C528;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+}
+
+}
+
+
   

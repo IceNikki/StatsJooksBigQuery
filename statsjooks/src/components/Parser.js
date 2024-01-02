@@ -1,129 +1,122 @@
-
-/* -------------------------------------------------------------------- */
-/* -- Composant permettant de lire le CSV et d'updater la BDD Firebase -*/
-/* -------------------------------------------------------------------- */
-
-import Papa from "papaparse";
 import React, { useState } from 'react';
+import Papa from "papaparse";
 import { db } from '../config/firebase';
-import { doc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { doc, writeBatch, arrayUnion } from 'firebase/firestore'; // Import arrayUnion
 
+async function processBatch(batch, quarterId) {
+    const batchWrite = writeBatch(db);
 
-/*Fonction qui permet l'envoi d'un objet en base à partir des données extraites du CSV*/
-async function Send(item) {
-  const obj = item;
-  /*on récupère les différentes valeurs de l'objet et on les stocke dans des constantes*/ 
-  const id = obj.ID
-  const namecity = obj['CITY NAME']
-  const nameroute = obj['ROUTE  NAME']
-  let nbrsessions= obj['NB ROUTE VIEWED']
-  /*on assigne un type aux constantes*/ 
-  const ID = String(id)
-  const NAMECITY = String(namecity)
-  const NAMEROUTE = String(nameroute)
-  const NBRSESSIONS = Number(nbrsessions)
-      // On ajoute les data a Firestore
-      await updateDoc(doc(db, "Routes", ID), {
-
-          id: ID,
-          nameCity: NAMECITY,
-          nameRoute: NAMEROUTE,
-          nbrSessions: NBRSESSIONS })
-      const cityRef = doc(db, "City", NAMECITY);
-      const docSnap = await updateDoc(cityRef, {Routes : arrayUnion(ID), nameCity : NAMECITY}, {merge:true}) 
-        /*Fonction async donc penser à faire un then pour annoncer les résultats. Renvoie "Data successfully submitted" une fois par ligne écrite*/ 
-      .then((docRef) => {
-          alert("Data Successfully Submitted");
-      })
-      .catch((error) => {
-          console.error("Error adding document: ", error);
-      });
+    for (const item of batch) {
+        prepareBatchOperation(item, quarterId, batchWrite);
     }
 
-  
+    try {
+        await batchWrite.commit();
+        console.log('Batch commit successful');
+    } catch (error) {
+        console.error('Batch commit failed', error);
+    }
+}
+
+function prepareBatchOperation(item, quarterId, batchWrite) {
+    const obj = item;
+    const ID = String(obj.ID);
+    const NAMECITY = String(obj['CITY NAME']);
+    const NAMEROUTE = String(obj['ROUTE  NAME']); 
+    const NBRSESSIONS = Number(obj['NB ROUTE VIEWED']);
+
+    const routeRef = doc(db, "Routes", ID);
+    const statsRef = doc(db, "Routes", ID, "statistics", quarterId);
+    const cityRef = doc(db, "City", NAMECITY);
+
+    batchWrite.set(routeRef, { id: ID, nameCity: NAMECITY, nameRoute: NAMEROUTE }, { merge: true });
+    batchWrite.set(statsRef, { nbrSessions: NBRSESSIONS }, { merge: true });
+    batchWrite.set(cityRef, { Routes: arrayUnion(ID), nameCity: NAMECITY }, { merge: true });
+}
 
 function Parse() {
-  // Stocke les datas parsées du CSV
-  const [parsedData, setParsedData] = useState([]);
- 
-  const [tableRows, setTableRows] = useState([]);
+    const [parsedData, setParsedData] = useState([]);
+    const [tableRows, setTableRows] = useState([]); // Define tableRows state
+    const [values, setValues] = useState([]); // Define values state
+    const [selectedQuarter, setSelectedQuarter] = useState("Q2");
+    const [selectedYear, setSelectedYear] = useState("2023");
+    const [progress, setProgress] = useState(0); // Progress state
 
-  const [values, setValues] = useState([]);
+    const changeHandler = async (event) => {
+        Papa.parse(event.target.files[0], {
+            header: true,
+            skipEmptyLines: true,
+            complete: async function (results) {
+                const rowsArray = [];
+                const valuesArray = [];
 
-  const changeHandler = (event) => {
-    // Donne les data à parser (event.target.files[0]) en utilisant Papa.parse
-    Papa.parse(event.target.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      complete: function (results) {
-        const rowsArray = [];
-        const valuesArray = [];
+                results.data.forEach((d) => {
+                    rowsArray.push(Object.keys(d));
+                    valuesArray.push(Object.values(d));
+                });
 
-        // Itère dans les datas pour récupérer les keys et leur valeur
-        results.data.map((d) => {
-          rowsArray.push(Object.keys(d));
-          valuesArray.push(Object.values(d));
+                setTableRows(rowsArray[0]); // Update tableRows state
+                setValues(valuesArray); // Update values state
+                setParsedData(results.data);
+                const quarterId = `${selectedQuarter}_${selectedYear}`;
+
+                const batchSize = 500; // Firestore batch size limit
+                const totalBatches = Math.ceil(results.data.length / batchSize);
+
+                for (let i = 0; i < totalBatches; i++) {
+                    const batch = results.data.slice(i * batchSize, (i + 1) * batchSize);
+                    await processBatch(batch, quarterId);
+                    setProgress(((i + 1) / totalBatches) * 100); // Update progress
+                }
+            }
         });
+    };
 
-        // Donne les datas parsées sous forme d'array
-        setParsedData(results.data);
+    return (
+        <div>
+            <progress value={progress} max="100"></progress> {/* Progress bar */}
 
-        // Filtre les noms de colonne
-        setTableRows(rowsArray[0]);
+            <select onChange={(e) => setSelectedQuarter(e.target.value)}>
+                <option value="Q1">Q1</option>
+                <option value="Q2">Q2</option>
+                <option value="Q3">Q3</option>
+                <option value="Q4">Q4</option>
+            </select>
 
-        // Filtre les valeurs
-        setValues(valuesArray);
+            <select onChange={(e) => setSelectedYear(e.target.value)}>
+                {Array.from({ length: 11 }, (_, i) => 2020 + i).map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                ))}
+            </select>
 
-        /*Lit l'array parsed Data qui est un array d'objets et envoie l'objet à la fonction Send*/ 
-        const myList = parsedData.map((item) => Send(item))      
+            <input
+                type="file"
+                name="file"
+                onChange={changeHandler}
+                accept=".csv"
+                style={{ display: "block", margin: "10px auto" }}
+            />
 
-      },
-    });
-
-
-            
-  
-  };
-
-  return (
-    <div>
-      {/* File Uploader */}
-      <input
-        type="file"
-        name="file"
-        onChange={changeHandler}
-        accept=".csv"
-        style={{ display: "block", margin: "10px auto" }}
-      />
-      <br />
-      <br />
-      
-      {/* Affiche le tableau avec les statistiques qui viennent d'être importées */}
-      <table>
-        <thead>
-          <tr>
-            {tableRows.map((rows, index) => {
-              return <th key={index}>{rows}</th>;
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {values.map((value, index) => {
-            return (
-              <tr key={index}>
-                {value.map((val, i) => {
-                  return <td key={i}>{val}</td>;
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      
-
-                    
-    </div>
-  );
+            <table>
+                <thead>
+                    <tr>
+                        {tableRows.map((row, index) => (
+                            <th key={index}>{row}</th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {values.map((value, index) => (
+                        <tr key={index}>
+                            {value.map((val, i) => (
+                                <td key={i}>{val}</td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
 }
 
 export default Parse;

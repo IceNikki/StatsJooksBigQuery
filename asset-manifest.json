@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/StatsJooks/static/css/main.c26b0d28.css",
+    "main.js": "/StatsJooks/static/js/main.ed18f618.js",
+    "index.html": "/StatsJooks/index.html",
+    "main.c26b0d28.css.map": "/StatsJooks/static/css/main.c26b0d28.css.map",
+    "main.ed18f618.js.map": "/StatsJooks/static/js/main.ed18f618.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c26b0d28.css",
+    "static/js/main.ed18f618.js"
+  ]
+}

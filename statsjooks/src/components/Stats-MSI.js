@@ -4,17 +4,14 @@
 
 import 'react-toastify/dist/ReactToastify.css';
 import { db } from '../config/firebase';
-import { getDoc, doc, getDocs, collection } from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";
 import React, {useState} from 'react';
 import { citysuggester } from '../components/CitySuggester';
 import { Link } from 'react-router-dom';
 import footstatsImage from '../imgs/footstats.png';
 
-const routeCache = {};
-
 export default function Table() {
 
-  
 
 	/* Déclaration d'Hooks permettant de mettre à 
 	jour dynamiquement les composants [variable, fonction de maj] */
@@ -101,84 +98,73 @@ if (suggestedCity !== null) {
 
 }
 
+
 /*Cette fonction lit la database à partir du nom de la ville login et return le tableau*/ 
 
 async function Read(login, year, quarter) {
-  const docRef = doc(db, "City", login);
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
+    const docRef = doc(db, "City", login);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
       const data = docSnap.data();
       const { Routes } = data;
       const dataArray = [];
-
+      
       for (const routeId of Routes) {
-          let routeData;
+        // Access the route document to get the id, nameCity, and nameRoute
+        const routeDocRef = doc(db, "Routes", routeId);
+        const routeDocSnap = await getDoc(routeDocRef);
+        
+        if (!routeDocSnap.exists()) {
+          console.log(`No route document for routeId: ${routeId}`);
+          continue; // Skip this iteration if route document doesn't exist
+        }
 
-          if (!routeCache[routeId]) {
-              // Fetch the route data and all its statistics
-              const routeDocRef = doc(db, "Routes", routeId);
-              const routeDocSnap = await getDoc(routeDocRef);
+        const routeData = routeDocSnap.data();
 
-              if (routeDocSnap.exists()) {
-                  routeData = routeDocSnap.data();
-                  const statsCollectionRef = collection(db, "Routes", routeId, "statistics");
-                  const statsSnapshot = await getDocs(statsCollectionRef);
-
-                  routeData.statistics = {};
-                  statsSnapshot.forEach(doc => {
-                      routeData.statistics[doc.id] = doc.data();
-                  });
-
-                  // Store the complete route data in the cache
-                  routeCache[routeId] = routeData;
-              } else {
-                  console.log(`No route document for routeId: ${routeId}`);
-                  continue;
-              }
-          } else {
-              // Use the cached data
-              routeData = routeCache[routeId];
-          }
-
-          // Process and add the data to dataArray
-          let nbrsessions = routeData.statistics[`${quarter}_${year}`]?.nbrSessions || 0;
-          let yearAnnual = 2022
-          let nbrsessionsannual = routeData.statistics[`AnnualStats${yearAnnual}`]?.nbrSessionsAnnual || 0;
+        // Access the subcollection "statistics" within each route for quarterly data
+        const statsDocRef = doc(db, "Routes", routeId, "statistics", `${quarter}_${year}`);
+        const statsDocSnap = await getDoc(statsDocRef);
+        
+        // Access the subcollection "statistics" within each route for annual data ----- HARDCODE YEAR, MODIFY IF NEEDED -----
+        const annualStatsDocRef = doc(db, "Routes", routeId, "statistics", `AnnualStats2022`);
+        const annualStatsDocSnap = await getDoc(annualStatsDocRef);
+  
+        if (statsDocSnap.exists()) {
+          const statsData = statsDocSnap.data();
           
-
-          const quarterStatKey = `${quarter}_${year}`;
-          const annualStatKey = `AnnualStats${yearAnnual}`;
-
-          if (routeData.statistics && routeData.statistics[quarterStatKey]) {
-              nbrsessions = routeData.statistics[quarterStatKey].nbrSessions || 0;
-          }
-
-          if (routeData.statistics && routeData.statistics[annualStatKey]) {
-              nbrsessionsannual = routeData.statistics[annualStatKey].nbrSessionsAnnual || 0;
-          }
-
-          // Applying the factor (assuming this is some kind of conversion or calculation)
+          let nbrsessions = statsData.nbrSessions || 0; // Default to 0 if not existent
+  
+          // Get nbrSessionsAnnual from the annual statistics document
+          let nbrsessionsannual = annualStatsDocSnap.exists() ? annualStatsDocSnap.data().nbrSessionsAnnual : 0;
+          
+  
+          nbrsessions = Number(nbrsessions);
+          nbrsessionsannual = isNaN(nbrsessionsannual) ? 0 : Number(nbrsessionsannual);
+          
+          // Factor remains the same
           const factor = 2.5;
-          nbrsessions = Math.floor(nbrsessions * factor);
-          nbrsessionsannual = Math.floor(nbrsessionsannual * factor);
-
-          // Pushing the combined data to dataArray
+          nbrsessions *= factor;
+          nbrsessionsannual *= factor;
+          nbrsessions = Math.floor(nbrsessions);
+          nbrsessionsannual = Math.floor(nbrsessionsannual);
+  
           dataArray.push({
-            id: routeId,
+            id: routeData.id,
             nameCity: routeData.nameCity,
             nameRoute: routeData.nameRoute,
             nbrSessions: nbrsessions,
             nbrSessionsAnnual: nbrsessionsannual
-        });
+          });
+        }
+      }
+      
+      dataArray.sort((a, b) => a.id.localeCompare(b.id));
+      return dataArray;
+    } else {
+      console.log("No such document!");
+      return [];
     }
-
-    dataArray.sort((a, b) => a.id.localeCompare(b.id));
-    return dataArray;
-} else {
-    console.log("No such document!");
-    return [];
-}
 }
 
   
@@ -189,52 +175,28 @@ async function Read(login, year, quarter) {
   /*On déclare un array et un booléen pour stocker les data extraites par Read et gérer l'asynchronisation*/ 
   const [dataread, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-  //const [selectedYear, setSelectedYear] = React.useState(new Date().getFullYear()); // default to current year
-  const [selectedYear, setSelectedYear] = React.useState(2023); // default to current year
-
+  const [selectedYear, setSelectedYear] = React.useState(new Date().getFullYear()); // default to current year
   const [selectedQuarter, setSelectedQuarter] = React.useState('Q2'); // default to Q1
-	// New state for progress bar
-  const [progress, setProgress] = useState(0);
 
+	
   React.useEffect(() => {
-      const fetchUserData = async () => {
-          setLoading(true);
-          setProgress(20); // Initial progress
+	const fetchUserData = async () => {
+	  setLoading(true);
+	  const response = await Read(cityName, selectedYear, selectedQuarter).then((value) => {
+		setData(value);
+		setLoading(false);
+	  });
+	};
+  
+	fetchUserData();
+  }, [selectedYear, selectedQuarter]);  // adding dependencies so that the effect reruns when selectedYear or selectedQuarter changes
+  
+	
 
-          // Simulate gradual increase in progress
-          const interval = setInterval(() => {
-              setProgress(oldProgress => {
-                  const newProgress = oldProgress + 10;
-                  return newProgress > 80 ? 80 : newProgress;
-              });
-          }, 1000); // Adjust the interval time as needed
-
-          try {
-              const response = await Read(cityName, selectedYear, selectedQuarter);
-              setData(response);
-          } catch (error) {
-              console.error("Error fetching data: ", error);
-              // Handle error
-          } finally {
-              clearInterval(interval);
-              setProgress(100); // Complete progress after loading
-              setLoading(false);
-          }
-      };
-
-      fetchUserData();
-  }, [selectedYear, selectedQuarter, cityName]);
-
-  if (loading) {
-      return (
-          <div>
-              <div className="progressBar">
-                  <div className="progress" style={{width: `${progress}%`}}>{progress}%</div>
-              </div>
-              <p>Loading...</p>
-          </div>
-      );
-  }
+	/*On déclare un booléen pour gérer l'affichage du menu*/
+	if (loading) {
+		return <p>Loading...</p>;
+	  } 
 	  
 	  else {
 		if (showChoice === false) {
@@ -308,7 +270,8 @@ async function Read(login, year, quarter) {
     <option value="Q1">Q1</option>
     <option value="Q2">Q2</option>
     <option value="Q3">Q3</option>
-    <option value="Q4">Q4</option> 
+    {/* <option value="Q3">Q3</option>
+    <option value="Q4">Q4</option> */}
   </select>
 </div>
 

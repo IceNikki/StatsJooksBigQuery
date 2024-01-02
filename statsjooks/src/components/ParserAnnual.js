@@ -1,57 +1,39 @@
-
-/* -------------------------------------------------------------------- */
-/* -- Composant permettant de lire le CSV et d'updater la BDD Firebase -*/
-/* -------------------------------------------------------------------- */
-
 import Papa from "papaparse";
 import React, { useState } from 'react';
 import { db } from '../config/firebase';
 import { doc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
-
-/*Fonction qui permet l'envoi d'un objet en base à partir des données extraites du CSV*/
-async function Send(item) {
-  const obj = item;
-  /*on récupère les différentes valeurs de l'objet et on les stocke dans des constantes*/ 
-  const id = obj.ID
-  const namecity = obj['CITY NAME']
-  const nameroute = obj['ROUTE  NAME']
-  let nbrsessionsannual= obj['NB ROUTE VIEWED']
-  /*on assigne un type aux constantes*/ 
-  const ID = String(id)
-  const NAMECITY = String(namecity)
-  const NAMEROUTE = String(nameroute)
-  const NBRSESSIONSANNUAL = Number(nbrsessionsannual)
-      // On ajoute les data a Firestore
-      await updateDoc(doc(db, "Routes", ID), {
-
-          id: ID,
-          nameCity: NAMECITY,
-          nameRoute: NAMEROUTE,
-          nbrSessionsAnnual: NBRSESSIONSANNUAL })
-      const cityRef = doc(db, "City", NAMECITY);
-      const docSnap = await updateDoc(cityRef, {Routes : arrayUnion(ID), nameCity : NAMECITY}, {merge:true}) 
-        /*Fonction async donc penser à faire un then pour annoncer les résultats. Renvoie "Data successfully submitted" une fois par ligne écrite*/ 
-      .then((docRef) => {
-          alert("Data Successfully Submitted");
-      })
-      .catch((error) => {
-          console.error("Error adding document: ", error);
-      });
-    }
-
-  
-
 function Parse() {
-  // Stocke les datas parsées du CSV
   const [parsedData, setParsedData] = useState([]);
- 
   const [tableRows, setTableRows] = useState([]);
-
   const [values, setValues] = useState([]);
+  const [selectedYear, setSelectedYear] = useState('2023');
+  const years = ['2020', '2021', '2022', '2023'];
+
+  async function Send(item) {
+    const ID = String(item.ID);
+    const NAMECITY = String(item['CITY NAME']);
+    const NAMEROUTE = String(item['ROUTE NAME']);
+    const NBRSESSIONSANNUAL = Number(item['NB ROUTE VIEWED']);
+
+    const statisticsRef = doc(db, "Routes", ID, "statistics", `AnnualStats${selectedYear}`);
+
+    await setDoc(statisticsRef, {
+      year: selectedYear,
+      id: ID,
+      nameCity: NAMECITY,
+      nameRoute: NAMEROUTE,
+      nbrSessionsAnnual: NBRSESSIONSANNUAL
+    })
+    .then(() => {
+      alert("Data Successfully Submitted");
+    })
+    .catch((error) => {
+      console.error("Error adding document: ", error);
+    });
+  }
 
   const changeHandler = (event) => {
-    // Donne les data à parser (event.target.files[0]) en utilisant Papa.parse
     Papa.parse(event.target.files[0], {
       header: true,
       skipEmptyLines: true,
@@ -59,35 +41,30 @@ function Parse() {
         const rowsArray = [];
         const valuesArray = [];
 
-        // Itère dans les datas pour récupérer les keys et leur valeur
         results.data.map((d) => {
           rowsArray.push(Object.keys(d));
           valuesArray.push(Object.values(d));
         });
 
-        // Donne les datas parsées sous forme d'array
         setParsedData(results.data);
-
-        // Filtre les noms de colonne
         setTableRows(rowsArray[0]);
-
-        // Filtre les valeurs
         setValues(valuesArray);
 
-        /*Lit l'array parsed Data qui est un array d'objets et envoie l'objet à la fonction Send*/ 
-        const myList = parsedData.map((item) => Send(item))      
-
+        parsedData.forEach(Send);
       },
     });
-
-
-            
-  
   };
 
   return (
     <div>
-      {/* File Uploader */}
+      <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+        {years.map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+        ))}
+      </select>
+
       <input
         type="file"
         name="file"
@@ -97,8 +74,7 @@ function Parse() {
       />
       <br />
       <br />
-      
-      {/* Affiche le tableau avec les statistiques qui viennent d'être importées */}
+
       <table>
         <thead>
           <tr>
@@ -119,9 +95,6 @@ function Parse() {
           })}
         </tbody>
       </table>
-      
-
-                    
     </div>
   );
 }

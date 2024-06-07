@@ -20,10 +20,14 @@ async function processBatch(batch, quarterId) {
 
 function prepareBatchOperation(item, quarterId, batchWrite) {
     const obj = item;
-    const ID = String(obj.ID);
-    const NAMECITY = String(obj['CITY NAME']);
-    const NAMEROUTE = String(obj['ROUTE  NAME']); 
-    const NBRSESSIONS = Number(obj['NB ROUTE VIEWED']);
+    const ID = String(item['Route id']);
+    const NAMECITY = String(item['City Name']);
+    const NAMEROUTE = String(item['Route Name']);
+    const NBRSESSIONS = Number(item['Open']); // Assuming you want to use the 'Open' field for the number of sessions
+
+
+    // Move the log statement here, after ID is defined
+    console.log(`Preparing batch for ID: ${ID}, Quarter: ${quarterId}`); // Debugging
 
     const routeRef = doc(db, "Routes", ID);
     const statsRef = doc(db, "Routes", ID, "statistics", quarterId);
@@ -34,12 +38,13 @@ function prepareBatchOperation(item, quarterId, batchWrite) {
     batchWrite.set(cityRef, { Routes: arrayUnion(ID), nameCity: NAMECITY }, { merge: true });
 }
 
+
 function Parse() {
     const [parsedData, setParsedData] = useState([]);
     const [tableRows, setTableRows] = useState([]); // Define tableRows state
     const [values, setValues] = useState([]); // Define values state
-    const [selectedQuarter, setSelectedQuarter] = useState("Q2");
-    const [selectedYear, setSelectedYear] = useState("2023");
+    const [selectedQuarter, setSelectedQuarter] = useState("Q1");
+    const [selectedYear, setSelectedYear] = useState("2022");
     const [progress, setProgress] = useState(0); // Progress state
 
     const changeHandler = async (event) => {
@@ -47,30 +52,36 @@ function Parse() {
             header: true,
             skipEmptyLines: true,
             complete: async function (results) {
-                const rowsArray = [];
-                const valuesArray = [];
-
-                results.data.forEach((d) => {
-                    rowsArray.push(Object.keys(d));
-                    valuesArray.push(Object.values(d));
+                const aggregatedData = {};
+            
+                // Aggregate sessions by Route ID
+                results.data.forEach(item => {
+                    const ID = String(item['Route id']);
+                    const sessions = Number(item['Open']);
+            
+                    if (!aggregatedData[ID]) {
+                        aggregatedData[ID] = { ...item, 'Open': sessions };
+                    } else {
+                        aggregatedData[ID]['Open'] += sessions;
+                    }
                 });
-
-                setTableRows(rowsArray[0]); // Update tableRows state
-                setValues(valuesArray); // Update values state
-                setParsedData(results.data);
+            
+                const aggregatedArray = Object.values(aggregatedData);
                 const quarterId = `${selectedQuarter}_${selectedYear}`;
-
+                
                 const batchSize = 500; // Firestore batch size limit
-                const totalBatches = Math.ceil(results.data.length / batchSize);
-
+                const totalBatches = Math.ceil(aggregatedArray.length / batchSize);
+            
                 for (let i = 0; i < totalBatches; i++) {
-                    const batch = results.data.slice(i * batchSize, (i + 1) * batchSize);
+                    const batch = aggregatedArray.slice(i * batchSize, (i + 1) * batchSize);
                     await processBatch(batch, quarterId);
                     setProgress(((i + 1) / totalBatches) * 100); // Update progress
                 }
             }
+            
         });
     };
+    
 
     return (
         <div>

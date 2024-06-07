@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/static/css/main.7cbfe167.css",
+    "main.js": "/static/js/main.f5e8bbe3.js",
+    "static/media/footstats.png": "/static/media/footstats.c0ade852bdbc18e4ab14.png",
+    "static/media/logo.png": "/static/media/logo.8ce95549b1220adb321d.png",
+    "static/media/GothamRounded-Medium.otf": "/static/media/GothamRounded-Medium.10d88929ec344e9ef796.otf",
+    "static/media/GothamRounded-Bold.otf": "/static/media/GothamRounded-Bold.a829ff15fe2b18d9330b.otf",
+    "static/media/GothamRounded-Medium.ttf": "/static/media/GothamRounded-Medium.6755dbe2075894fd6cfb.ttf",
+    "static/media/GothamRounded-Bold.ttf": "/static/media/GothamRounded-Bold.22c671586e6db4475341.ttf",
+    "static/media/GothamRounded-Medium.woff": "/static/media/GothamRounded-Medium.e6e7123f7e2792fbbca0.woff",
+    "static/media/GothamRounded-Bold.woff": "/static/media/GothamRounded-Bold.ed42340ad08ff61cd87d.woff",
+    "index.html": "/index.html",
+    "main.7cbfe167.css.map": "/static/css/main.7cbfe167.css.map",
+    "main.f5e8bbe3.js.map": "/static/js/main.f5e8bbe3.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7cbfe167.css",
+    "static/js/main.f5e8bbe3.js"
+  ]
+}

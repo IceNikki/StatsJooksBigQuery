@@ -118,6 +118,70 @@ tbody td {
   display: inline-block;
 }
 
+.admin-container {
+  padding: 20px;
+}
+
+.filters-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+  margin-bottom: 10px;
+}
+
+.filter-group label {
+  margin-bottom: 5px;
+}
+
+.btn-group .btn {
+  margin-right: 10px;
+}
+
+.btn {
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #57c528;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #e0e0e0;
+  color: black;
+}
+
+.statistics-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.statistics-table td,
+.statistics-table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.statistics-table th {
+  background-color: #f2f2f2;
+}
+
+.statistics-table tr:last-child {
+  border-top: 2px solid #ccc;
+}
+
+.statistics-table tr:last-child td:first-child {
+  font-weight: bold;
+  padding-top: 10px;
+}
 
 /* ---------------------------------------------- */
 /* --------- Eléments --------------------------- */

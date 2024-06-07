@@ -8,7 +8,7 @@ import '../css/App.css';
 
 // nos composants
 import Contactform from '../components/Contact-form';
-import Stat from '../components/Stats';
+import Stat from '../components/Stats/Stats';
 
 
 
